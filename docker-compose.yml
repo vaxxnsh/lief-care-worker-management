@@ -1,0 +1,15 @@
+services:
+  postgres:
+    container_name: care-worker-management-db
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: care-worker-management
+      POSTGRES_PASSWORD: secret_password
+
+volumes:
+  postgres_data:
