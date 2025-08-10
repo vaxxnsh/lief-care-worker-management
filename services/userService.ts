@@ -1,13 +1,18 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@/prisma/generated/prisma";
-
+import { OrgRole } from "@/prisma/generated/prisma";
 export class UserService {
-    public static async findUser<T extends Prisma.UserFindFirstArgs>
-    (
-        args: Prisma.SelectSubset<T, Prisma.UserFindFirstArgs>
-    )
-    : Promise<Prisma.UserGetPayload<T> | null> 
-    {
-        return prisma.user.findFirst(args);
+    public static async findUserById(userId : string) {
+        return prisma.user.findFirst({where : {id : userId}});
+    }
+
+    public static async isMember(userId : string,orgId : string) : Promise<[false,null] | [true,OrgRole]> {
+        const user = await prisma.user.findFirst({where : {id : userId}, include : {orgMemberships : true}})
+
+        const member = user?.orgMemberships.findLast((o) => o.orgId == orgId)
+
+        if (!member?.id) {
+            return [false,null]
+        }
+        return [true,member.role]
     }
 }

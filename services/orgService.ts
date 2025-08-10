@@ -1,104 +1,126 @@
 import { prisma } from "@/lib/prisma";
-import {User,Organization,Prisma, OrgRole} from "@/prisma/generated/prisma"
 import { UserService } from "./userService";
+import { Organization, OrgRole } from "@/prisma/generated/prisma";
 import { orgMemberService } from "./orgMemberService";
 
 
-export type UserWithMemberships = Prisma.UserGetPayload<{
-  include: { orgMemberships: true };
-}>;
+
+
 
 
 
 export class OrgService {
 
-    public static async FindOrg<T extends Prisma.OrganizationFindFirstArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationFindFirstArgs>
-    ): Promise<Prisma.OrganizationGetPayload<T> | null> {
-        return prisma.organization.findFirst(args);
+    public static async FindOrgById(orgId : string) {
+        return prisma.organization.findFirst({where : {id : orgId}});
     }
 
-    public static async createOrg<T extends Prisma.OrganizationCreateArgs>(
-        args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
-    ): Promise<Prisma.OrganizationGetPayload<T>> {
-        return prisma.organization.create(args);
-    }
-
-
-    public static async addUserToOrg(userId : string,orgId : string,role : OrgRole) : Promise<boolean> {
-        const user = await UserService.findUser({
-            where : { id : userId},
-
-            include : {
-                createdOrgs : true,
-                orgMemberships : true,
-            }
-        })
+    public static async createOrg(name : string,creatorId : string) {
+        const user = await UserService.findUserById(creatorId);
 
         if(!user) {
             throw new Error("User not found")
         }
 
-        const org = await this.FindOrg({where : {id : orgId}})
+        const org = await prisma.organization.create({
+            data : {
+                name : name,
+                createdBy : creatorId,
+            }
+        });
+
+        console.log(org);
+        return {
+            id : org.id,
+            name : org.name,
+            createdBy : org.createdBy
+        }
+    }
+
+
+    public static async addUserToOrg(userId : string,adminId : string,orgId : string,role : OrgRole) : Promise<boolean> {
+        const user = await UserService.findUserById(userId);
+
+        if(!user) {
+            throw new Error("User not found")
+        }
+
+        const org = await this.FindOrgById(orgId);
 
 
         if (!org) {
             throw new Error("Organization not Found")
         }
 
-        if (!this.isAdmin(user,org)) {
+        if (!this.isAdmin(adminId,org)) {
             throw new Error("UnAuthorized")
         }
 
 
-        if (this.isMember(user,org)) {
+        if ((await UserService.isMember(user.id,org.id))[0]) {
             throw new Error("Already a member")
         }
 
-        return await orgMemberService.create({
-            data : {
-                orgId : org.id,
-                userId : user.id,
-                role : role
-            }
-        })
-
+        return await orgMemberService.addMember(userId,orgId,role);
     }
 
-    public static async removeMember(userId : string,orgId : string) {
-        const user = await UserService.findUser({where : {id : userId}})
+    public static async removeMember(userId : string,adminId : string,orgId : string) {
+         const user = await UserService.findUserById(userId);
 
-        if (!user) {
-            throw new Error("user not found")
+         if (!user) {
+            throw new Error("User not found")
         }
 
-        const org = await this.FindOrg({
-            where : {id : orgId},
-            include : { members : true}
-        })
+        const org = await this.FindOrgById(orgId);
 
         if(!org) {
             throw new Error("Organization not found")
         }
 
-        if (!this.isAdmin(user,org)) {
+        if (!this.isAdmin(adminId,org)) {
             throw new Error("UnAuthorized")
         }
 
-        const member = await orgMemberService.find({where : {userId : userId}})
+        const isMember = (await UserService.isMember(userId,orgId))[0];
 
-        if (!member) {
+        if (!isMember) {
             throw new Error("OrgMember not Found")
         }
 
-        return orgMemberService.delete({where : {id : member.id}})
+        return orgMemberService.removeMember(userId,orgId);
     }
 
-    private static isMember(user : UserWithMemberships,org : Organization) : boolean {
-        return !!user.orgMemberships.findLast((o) => o.orgId === org.id)
+    public static async changeMemberRole(userId : string,adminId : string,orgId : string,role : OrgRole) {
+        const user = await UserService.findUserById(userId);
+
+        if(!user) {
+            throw new Error("User not found")
+        }
+
+        const org = await this.FindOrgById(orgId);
+
+
+        if (!org) {
+            throw new Error("Organization not Found")
+        }
+
+        const isMember = await UserService.isMember(userId,orgId);
+
+        if (!isMember[0]) {
+            throw new Error("User is not a member")
+        }
+
+        if (isMember[1] === role) {
+            throw new Error(`User already a ${role === "MANAGER" ? "Manager" : "Care Worker"}`)
+        }
+
+
+        const success = await orgMemberService.changeRoleOfMember(userId,orgId,role);
+
+        return success
     }
 
-    private static isAdmin(user : User, org : Organization) : boolean {
-        return user.id == org.createdBy;
+    private static isAdmin(adminId : string, org : Organization) : boolean {
+        return adminId == org.createdBy;
     }
 }

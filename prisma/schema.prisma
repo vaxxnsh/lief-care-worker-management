@@ -67,7 +67,7 @@ model OrgMembers {
   user         User         @relation(fields: [userId], references: [id])
   role         OrgRole      @default(CARE_WORKER)
 
-  
+  @@unique([userId,orgId])
   @@index([userId, role])
 }
 
