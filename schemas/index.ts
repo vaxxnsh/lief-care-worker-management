@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 export const RegisterSchema = z.object({
-  email: z.email({
+  email: z.string().email({
     message: "Please enter a valid email address",
   }),
   name: z.string().min(1, {
@@ -16,7 +16,7 @@ export const RegisterSchema = z.object({
 });
 
 export const LoginSchema = z.object({
-  email: z.email({
+  email: z.string().email({
     message: "Please enter a valid email address",
   }),
   password: z.string().min(1, {
@@ -25,7 +25,7 @@ export const LoginSchema = z.object({
 });
 
 export const ResetPasswordSchema = z.object({
-  email: z.email({
+  email: z.string().email({
     message: "Please enter a valid email address",
   }),
 });
@@ -38,8 +38,3 @@ export const NewPasswordSchema = z.object({
     message: "Password must be at least 6 characters long",
   }),
 });
-
-
-
-
-

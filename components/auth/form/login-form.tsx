@@ -18,13 +18,16 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { FormSuccess } from "../form-success";
 import { FormError } from "../form-error";
-import GoogleLogin  from "../google-login";
-import { login } from "@/actions/login";
+import GoogleLogin from "../google-login";
+
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -36,15 +39,29 @@ const LoginForm = () => {
 
   const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
     setLoading(true);
-    login(data).then((res) => {
-      if (res.error) {
-        setError(res.error);
+    setError("");
+    setSuccess("");
+
+    try {
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect : false
+      });
+
+      if (result?.error) {
+        setError("Invalid credentials");
+        return;
       }
-      if (res.success) {
-        setError("");
-        setSuccess(res.success);
-      }
-    }).finally(() => setLoading(false));
+
+      setSuccess("Logged in successfully!");
+      router.push("/");
+    } catch (err) {
+      console.log(err)
+      setError("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -52,7 +69,7 @@ const LoginForm = () => {
       headerLabel="Login your account"
       title="Login"
       backButtonHref="/auth/register"
-      backButtonLabel="Don't have an account ?"
+      backButtonLabel="Don't have an account?"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -88,10 +105,11 @@ const LoginForm = () => {
                 </FormItem>
               )}
             />
-
           </div>
+
           <FormSuccess message={success} />
           <FormError message={error} />
+
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Loading..." : "Login In"}
           </Button>

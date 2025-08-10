@@ -1,18 +1,17 @@
-"use client";
+"use server";
 
-import { signIn } from "next-auth/react";
+import { signIn } from "@/lib/auth";
+import { AuthError } from "next-auth";
 
 export async function googleAuthenticate() {
     try {
       await signIn('google',{
-        redirect: true,
-        callbackUrl:'/'
+        redirectTo:"/"
       });
     } catch (error) {
-      console.log(error)
-      if (error) {
+      if (error instanceof AuthError) {
         return 'google log in failed'
       }
       throw error;
     }
-}
+  }

@@ -2,8 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { LoginSchema } from "@/schemas";
-import bcrypt from "bcryptjs";
-import { signIn } from "next-auth/react";
+import { signIn } from "@/lib/auth";
 import z from "zod";
 
 export const login = async (data : z.infer<typeof LoginSchema>) => {
@@ -20,25 +19,22 @@ export const login = async (data : z.infer<typeof LoginSchema>) => {
         const userExist = await prisma.user.findFirst({
             where : {
                 email : email,
-                password : password
             }
         });
 
-        if(!userExist || !userExist.password) {
+        if(!userExist) {
             return {error : "User not found"}
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        if (userExist.password !== hashedPassword) {
-            return {error : "Incorrect email or password"}
+        if (!userExist.password) {
+            return {error : "Password not set"}
         }
+
 
         await signIn("credentials",{
             email : email,
-            password : hashedPassword,
-            redirect : true,
-            callbackUrl : '/',
+            password : password,
+            redirect : false,
         })
 
         return { success : "logged in successfully"}
