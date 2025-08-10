@@ -7,6 +7,7 @@ export default function Component() {
     return (
       <>
         Signed in as {session?.user?.email} <br />
+        Image is {session?.user?.image} <br />
         <button onClick={() => signOut()}>Sign out</button>
       </>
     )

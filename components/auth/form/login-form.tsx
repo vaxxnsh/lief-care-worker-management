@@ -50,7 +50,11 @@ const LoginForm = () => {
       });
 
       if (result?.error) {
-        setError("Invalid credentials");
+        switch(result.error) {
+          case "CredentialsSignin" : setError("Invalid email or password")
+          break;
+          default: setError("Couldn't Sign In")
+        }
         return;
       }
 

@@ -19,6 +19,9 @@ if (!googleClientId || !googleClientSecret) {
 export const authOptions : NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   session : {strategy : 'jwt'},
+  pages : {
+    signIn : "/login"
+  },
   providers: [
   
     Credentials({
