@@ -83,8 +83,7 @@ model Location {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  // attendances   Attendance[]
-
   @@index([organizationId])
+  @@unique([latitude,longitude,organizationId])
   @@index([latitude, longitude])
 }

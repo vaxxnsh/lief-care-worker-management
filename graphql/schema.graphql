@@ -2,11 +2,35 @@
 ### Do not make changes to this file directly
 
 
+scalar DateTime
+
+type Location {
+  address: String
+  createdAt: DateTime!
+  id: String!
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  organizationId: String!
+  radiusMeters: Int!
+  updatedAt: DateTime!
+}
+
 type Mutation {
   addMemberToOrg(memberId: String!, orgId: String!, role: Int!): Boolean!
   changeMemberRole(memberId: String!, orgId: String!, role: Int!): Boolean!
   createOrg(name: String!): Organization!
   removeMemberFromOrg(memberId: String!, orgId: String!): Boolean!
+}
+
+"\n    This scalar should never make it into production. It is used as a placeholder for situations\n    where GraphQL Nexus encounters a missing type. We don't want to error immediately, otherwise\n    the TypeScript definitions will not be updated.\n  "
+scalar NEXUS__UNKNOWN__TYPE
+
+type OrgMembers {
+  id: String!
+  orgId: String!
+  role: NEXUS__UNKNOWN__TYPE!
+  userId: String!
 }
 
 type Organization {

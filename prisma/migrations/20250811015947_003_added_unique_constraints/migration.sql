@@ -49,6 +49,9 @@ CREATE INDEX "Location_organizationId_idx" ON "public"."Location"("organizationI
 -- CreateIndex
 CREATE INDEX "Location_latitude_longitude_idx" ON "public"."Location"("latitude", "longitude");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Location_latitude_longitude_organizationId_key" ON "public"."Location"("latitude", "longitude", "organizationId");
+
 -- AddForeignKey
 ALTER TABLE "public"."Organization" ADD CONSTRAINT "Organization_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 

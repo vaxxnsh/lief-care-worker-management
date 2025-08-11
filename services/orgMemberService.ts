@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { OrgRole } from "@/prisma/generated/prisma";
-
 export class orgMemberService {
     // public static async find<T extends Prisma.OrgMembersFindFirstArgs>
     // (
