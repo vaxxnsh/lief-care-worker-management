@@ -10,7 +10,7 @@ export const Location = objectType({
     t.nonNull.float("latitude");
     t.nonNull.float("longitude");
     t.nonNull.int("radiusMeters");
-    t.nonNull.field("createdAt", { type: "DateTime" });
-    t.nonNull.field("updatedAt", { type: "DateTime" });
+    t.nonNull.field("shiftStart", { type: "DateTime" });
+    t.nonNull.field("shiftEnd", { type: "DateTime" });
   },
 });

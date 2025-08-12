@@ -2,18 +2,16 @@ import { prisma } from "@/lib/prisma";
 import { UserService } from "./userService";
 import { Organization, OrgRole } from "@/prisma/generated/prisma";
 import { orgMemberService } from "./orgMemberService";
-import { CreateLocationInput, LocationService,Location } from "./locationService";
-
-
-
-
-
-
-
+import { CreateLocationInput, LocationService } from "./locationService";
 export class OrgService {
 
     public static async findOrgById(orgId : string) {
         return prisma.organization.findFirst({where : {id : orgId}});
+    }
+
+    public static async findLocationsWithOrg (orgId : string) {
+        return prisma.organization.findFirst({where : {id : orgId}, include : {location : true}});
+
     }
 
     public static async createOrg(name : string,creatorId : string) {
@@ -122,7 +120,6 @@ export class OrgService {
     }
 
     public static async addLocation(adminId : string,orgId : string,locationInput : CreateLocationInput) {
-        const {location} = locationInput
         const admin = await UserService.findUserById(adminId);
 
         if (!admin) {
@@ -135,14 +132,16 @@ export class OrgService {
             throw new Error("Org not found")
         }
 
-        if (!LocationService.isValidLatLng(location)) {
-            throw new Error("Invalid inputs")
+        const loc = await LocationService.GetLocation(orgId,locationInput.location);
+
+        if (loc?.id) {
+            throw new Error("Location Already Exists")
         }
         
         return await LocationService.addLocationByOrgId(orgId,locationInput);
     }
 
-    public static async removeLocation(adminId : string,orgId : string,location : Location) {
+    public static async removeLocation(adminId : string,orgId : string,locationId : string) {
         const admin = await UserService.findUserById(adminId);
 
         if (!admin) {
@@ -155,7 +154,7 @@ export class OrgService {
             throw new Error("Org not found")
         }
 
-        const lct = await LocationService.GetLocation(orgId,location);
+        const lct = await LocationService.GetLocationByID(orgId,locationId);
 
         if(!lct) {
             throw new Error("Location not found");

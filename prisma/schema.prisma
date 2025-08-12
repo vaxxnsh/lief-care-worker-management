@@ -13,6 +13,12 @@ enum OrgRole {
   CARE_WORKER
 }
 
+enum AttendanceStatus {
+  PRESENT   
+  ABSENT
+  CHECKED_OUT
+}
+
 model User {
   id             String         @id @default(cuid())
   name           String?
@@ -23,6 +29,7 @@ model User {
   accounts       Account[]
   createdOrgs    Organization[]
   orgMemberships OrgMembers[]
+  attendances    Attendance[]
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 }
@@ -57,6 +64,7 @@ model Organization {
   updatedAt DateTime     @updatedAt
   members   OrgMembers[]
   location  Location[]
+  attendances    Attendance[]
 }
 
 model OrgMembers {
@@ -82,8 +90,38 @@ model Location {
   radiusMeters   Int          @default(2000)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  shiftStart    DateTime @db.Time(0) @default("2005-01-25T09:00:00.000Z")
+  shiftEnd      DateTime @db.Time(0) @default("2005-01-25T17:00:00.000Z")
 
+  attendances    Attendance[]
   @@index([organizationId])
   @@unique([latitude,longitude,organizationId])
   @@index([latitude, longitude])
+}
+
+model Attendance {
+  id String @id @default(uuid())
+  location Location @relation(fields: [locationId],references: [id])
+  locationId String 
+  userId String 
+  user User @relation(fields: [userId],references: [id])
+  organizationId String
+  organization  Organization @relation(fields: [organizationId], references: [id])
+  status AttendanceStatus @default(ABSENT)
+  date          DateTime
+  clockInAt      DateTime         @default(now())
+  clockInLat     Float
+  clockInLng     Float
+  clockOutAt     DateTime?
+  clockOutLat    Float?
+  clockOutLng    Float?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+
+
+  @@unique([userId, organizationId, date])
+  @@index([userId, clockInAt])
+  @@index([locationId, clockInAt])
+  @@index([status, createdAt])
 }
