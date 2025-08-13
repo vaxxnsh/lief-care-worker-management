@@ -1,1 +1,1 @@
-export const ProtectedApi = []
+export const ProtectedPages = ["/"]

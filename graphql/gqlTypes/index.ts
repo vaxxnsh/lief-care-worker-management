@@ -3,6 +3,7 @@ import { scalarType } from 'nexus';
 export * from './Org'
 export * from './Location';
 export * from './Members';
+export * from './Attendance';
 
 export const DateTime = scalarType({
   name: 'DateTime',

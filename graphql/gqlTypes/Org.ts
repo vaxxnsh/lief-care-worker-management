@@ -1,6 +1,7 @@
+import { LocationService } from "@/services/locationService";
 import { OrgService } from "@/services/orgService";
 import { UserService } from "@/services/userService";
-import { extendType, nonNull, objectType, stringArg, intArg, floatArg, arg } from "nexus";
+import { extendType, nonNull, objectType, stringArg, intArg, floatArg } from "nexus";
 
 const TEST_ADMIN="cme7b98yo0001mzm9g91lpa7b";
 const TEST_USER="cme7b905i0000mzm9n22or9yb";
@@ -24,6 +25,22 @@ export const OrganizationQuery = extendType({
     })
   },
 })
+
+
+export const OrgLocationQuery = extendType({
+  type: "Query",
+  definition(t) {
+        t.list.field("GetOrgLocations", {
+      type: "Location",
+      args: {
+        orgId: nonNull(stringArg()),
+      },
+      resolve: async (_parent, { orgId }) => {
+        return await LocationService.GetLocationsByOrgID(orgId);
+      },
+    })
+  },
+});
 
 export const OrgMutations = extendType({
   type: "Mutation",
@@ -94,17 +111,21 @@ export const OrgMutations = extendType({
         lat : nonNull(floatArg()),
         long : nonNull(floatArg()),
         radius : nonNull(intArg()),
-        shiftStart : nonNull(arg({type : 'DateTime'})),
-        shiftEnd : nonNull(arg({type : 'DateTime'}))
+        shiftStart : nonNull(stringArg()),
+        shiftEnd : nonNull(stringArg())
       },
 
       resolve : async (_parent,{orgId,name,address,lat,long,radius,shiftStart,shiftEnd}) => {
+        console.log('request reached here')
+        const temp = `1970-01-01T${shiftStart}:00.000`;
+        const temp2 = `1970-01-01T${shiftEnd}:00.000`;
+        
         return await OrgService.addLocation(TEST_ADMIN,orgId,{
           name : name,
           address : address,
           radius : radius,
-          shiftStart : new Date(shiftStart),
-          shiftEnd : new Date(shiftEnd),
+          shiftStart : new Date(temp),
+          shiftEnd : new Date(temp2),
           location : {
             lat : lat,
             long : long,

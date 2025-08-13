@@ -11,6 +11,7 @@ import bycrypt from 'bcryptjs'
 
 
 if (!googleClientId || !googleClientSecret) {
+    
     throw new Error("GOOGLE_CLIENT_ID Or GOOGLE_CLIENT_SECRET Not in the env")
 }
 

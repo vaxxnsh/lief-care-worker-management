@@ -59,7 +59,7 @@ model Organization {
   id        String       @id @default(uuid())
   name      String
   createdBy String
-  admin     User         @relation(fields: [createdBy], references: [id])
+  admin     User         @relation(fields: [createdBy], references: [id],onDelete: Cascade)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   members   OrgMembers[]
@@ -70,9 +70,9 @@ model Organization {
 model OrgMembers {
   id           String       @id @default(uuid())
   orgId        String
-  organization Organization @relation(fields: [orgId], references: [id])
+  organization Organization @relation(fields: [orgId], references: [id],onDelete: Cascade)
   userId       String
-  user         User         @relation(fields: [userId], references: [id])
+  user         User         @relation(fields: [userId], references: [id],onDelete: Cascade)
   role         OrgRole      @default(CARE_WORKER)
 
   @@unique([userId,orgId])
@@ -81,7 +81,7 @@ model OrgMembers {
 
 model Location {
   id             String       @id @default(uuid())
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id],onDelete: Cascade)
   organizationId String
   name           String
   address        String?
@@ -101,12 +101,12 @@ model Location {
 
 model Attendance {
   id String @id @default(uuid())
-  location Location @relation(fields: [locationId],references: [id])
+  location Location @relation(fields: [locationId],references: [id],onDelete: Cascade)
   locationId String 
   userId String 
   user User @relation(fields: [userId],references: [id])
   organizationId String
-  organization  Organization @relation(fields: [organizationId], references: [id])
+  organization  Organization @relation(fields: [organizationId], references: [id],onDelete: Cascade)
   status AttendanceStatus @default(ABSENT)
   date          DateTime
   clockInAt      DateTime         @default(now())

@@ -2,6 +2,18 @@
 ### Do not make changes to this file directly
 
 
+type Attendance {
+  address: String
+  id: String!
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  organizationId: String!
+  radiusMeters: Int!
+  shiftEnd: DateTime!
+  shiftStart: DateTime!
+}
+
 scalar DateTime
 
 type Location {
@@ -17,7 +29,7 @@ type Location {
 }
 
 type Mutation {
-  addLocationToOrg(address: String!, lat: Float!, long: Float!, name: String!, orgId: String!, radius: Int!, shiftEnd: DateTime!, shiftStart: DateTime!): Location!
+  addLocationToOrg(address: String!, lat: Float!, long: Float!, name: String!, orgId: String!, radius: Int!, shiftEnd: String!, shiftStart: String!): Location!
   addMemberToOrg(memberId: String!, orgId: String!, role: Int!): Boolean!
   changeMemberRole(memberId: String!, orgId: String!, role: Int!): Boolean!
   clockInToOrg(lat: Float!, long: Float!, orgId: String!): Boolean!
@@ -40,5 +52,6 @@ type Organization {
 }
 
 type Query {
+  GetOrgLocations(orgId: String!): [Location]
   GetOrgs: [Organization]
 }

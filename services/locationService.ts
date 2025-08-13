@@ -49,9 +49,17 @@ export class LocationService {
             }
         })
     }
+    public static async GetLocationsByOrgID(orgId : string) {
+        return await prisma.location.findMany({
+            where : {
+                organizationId : orgId
+            }
+        })
+    }
     
     public static async addLocationByOrgId(orgId : string,locationInput : CreateLocationInput) {
         const {name, address,location,radius,shiftStart,shiftEnd} = locationInput
+
 
         if (!LocationService.isValidLatLng(location)) {
             throw new Error("Invalid inputs")

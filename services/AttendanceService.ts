@@ -70,12 +70,21 @@ export class AttendanceService {
             }
         }))
     }
+    
+    public  static async getAttendanceByOrgId(orgId : string) {
+        return await prisma.attendance.findMany({
+            where : {
+                organizationId : orgId,
+            }
+        })
+    }
 
     private static currentDate() {
         const todayMidnight = new Date();
         todayMidnight.setHours(0, 0, 0, 0); 
         return todayMidnight;
     }
+
 } 
 
 
