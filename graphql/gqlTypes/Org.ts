@@ -9,8 +9,12 @@ const TEST_USER="cme7b905i0000mzm9n22or9yb";
 export const Organization = objectType({
     name : "Organization",
     definition(t) {
-        t.string('id')
-        t.string('name')
+        t.nonNull.string('id')
+        t.nonNull.string('name')
+        t.nonNull.string('createdBy')
+        t.nonNull.int('memberCount')
+        t.nonNull.int('locationCount')
+        t.nonNull.string('createdAt')
     }
 })
 
@@ -19,8 +23,22 @@ export const OrganizationQuery = extendType({
   definition(t) {
     t.list.field('GetOrgs', {     
       type: 'Organization',
-      resolve() {
-        return [{ id : "org 1",name : "my org"}]
+      resolve: async () => {
+        
+        const orgs =  await UserService.GetUserOrgs(TEST_ADMIN)
+
+        if (!orgs) return []
+
+        return orgs.map((o) => (
+          {
+            id : o.id,
+            name : o.name,
+            createdBy : o.createdBy,
+            memberCount : o.members.length,
+            locationCount : o.location.length,
+            createdAt : o.createdAt.toISOString()
+          }
+        ))
       },     
     })
   },
@@ -53,7 +71,24 @@ export const OrgMutations = extendType({
       resolve: async (_parent, {name}) => {
         //TODO: remove test admin
         const org = await OrgService.createOrg(name,TEST_ADMIN);
-        return org
+
+        return {
+            id : org.id,
+            name : org.name,
+            createdBy : org.createdBy,
+            memberCount :  org.location.length,
+            locationCount : org.members.length,
+            createdAt : org.createdAt.toISOString()
+          }
+      },
+    });
+    t.nonNull.field("deleteOrg", {
+      type: "Boolean",
+      args: {
+        orgId: nonNull(stringArg()),
+      },
+      resolve: async (_parent, {orgId}) => {
+        return await OrgService.deleteOrg(orgId,TEST_ADMIN);
       },
     });
 

@@ -53,6 +53,9 @@ export class LocationService {
         return await prisma.location.findMany({
             where : {
                 organizationId : orgId
+            },
+            include : {
+                
             }
         })
     }

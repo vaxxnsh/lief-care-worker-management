@@ -25,15 +25,46 @@ export class OrgService {
             data : {
                 name : name,
                 createdBy : creatorId,
+            },
+            include : {
+                members : true,
+                location : true
             }
         });
 
         console.log(org);
-        return {
-            id : org.id,
-            name : org.name,
-            createdBy : org.createdBy
+        return org
+    }
+    
+    public static async deleteOrg(orgId : string,creatorId : string) : Promise<boolean> {
+        const user = await UserService.findUserById(creatorId);
+
+        if(!user) {
+            throw new Error("User not found")
         }
+
+        const isOrg = await prisma.organization.findFirst({
+            where : {
+                id : orgId
+            }
+        });
+
+        if(!isOrg) {
+            throw new Error("Org not found")
+        }
+
+        if(!OrgService.isAdmin(creatorId,isOrg)) {
+            throw new Error("Unauthorized")
+        }
+
+        const org = await prisma.organization.delete({
+            where : {
+                id : orgId
+            }
+        });
+
+        console.log(org);
+        return !!org.id
     }
 
 

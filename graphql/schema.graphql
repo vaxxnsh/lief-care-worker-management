@@ -42,20 +42,25 @@ type Mutation {
   clockInToOrg(lat: Float!, long: Float!, orgId: String!): Boolean!
   clockOutOfOrg(lat: Float!, long: Float!, orgId: String!): Boolean!
   createOrg(name: String!): Organization!
+  deleteOrg(orgId: String!): Boolean!
   removeLocationFromOrg(locationId: String!, orgId: String!): Boolean!
   removeMemberFromOrg(memberId: String!, orgId: String!): Boolean!
 }
 
 type OrgMembers {
   id: String!
-  orgId: String!
   role: String!
+  user: User!
   userId: String!
 }
 
 type Organization {
-  id: String
-  name: String
+  createdAt: String!
+  createdBy: String!
+  id: String!
+  locationCount: Int!
+  memberCount: Int!
+  name: String!
 }
 
 type Query {

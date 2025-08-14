@@ -2,10 +2,23 @@ import { prisma } from "@/lib/prisma";
 import { OrgRole } from "@/prisma/generated/prisma";
 import { Location, LocationService } from "./locationService";
 import { OrgService } from "./orgService";
-import { AttendanceService } from "./AttendanceService";
+import { AttendanceService } from "./attendanceService";
 export class UserService {
     public static async findUserById(userId : string) {
         return prisma.user.findFirst({where : {id : userId}});
+    }
+
+    public static async GetUserOrgs(userId : string) {
+        return prisma.organization.findMany({
+            where : {
+                createdBy : userId
+            },
+
+            include : {
+                members : true,
+                location : true,
+            }
+        })
     }
 
     public static async isMember(userId : string,orgId : string) : Promise<[false,null] | [true,OrgRole]> {

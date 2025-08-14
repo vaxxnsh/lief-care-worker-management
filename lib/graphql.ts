@@ -1,5 +1,51 @@
 import gql from "graphql-tag";
 
+
+export const GET_ORGS = gql`
+  query GetOrgs {
+    GetOrgs {
+      id
+      name
+      createdBy
+      createdAt
+      memberCount
+      locationCount
+    }
+  }
+`;
+
+export const CREATE_ORG = gql`
+  mutation CreateOrg($name: String!) {
+    createOrg(name: $name) {
+      id
+      name
+      createdAt
+      createdBy
+      memberCount
+      locationCount
+    }
+  }
+`;
+
+export const DELETE_ORG = gql`
+  mutation DeleteOrg($orgId: String!) {
+    deleteOrg(orgId: $orgId)
+  }
+`;
+
+export const ADD_MEMBER_TO_ORG = gql`
+  mutation AddMemberToOrg($memberId: String!, $orgId: String!, $role: Int!) {
+    addMemberToOrg(memberId: $memberId, orgId: $orgId, role: $role)
+  }
+`;
+
+export const REMOVE_MEMBER_FROM_ORG = gql`
+  mutation RemoveMemberFromOrg($memberId: String!, $orgId: String!) {
+    removeMemberFromOrg(memberId: $memberId, orgId: $orgId)
+  }
+`;
+
+
 export const GET_ORG_LOCATIONS = gql`
   query GetOrgLocations($orgId: String!) {
     GetOrgLocations(orgId: $orgId) {

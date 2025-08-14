@@ -1,4 +1,4 @@
-import { AttendanceService } from '@/services/AttendanceService'
+import { AttendanceService } from '@/services/attendanceService'
 import { objectType, extendType, nonNull, stringArg, enumType } from 'nexus'
 
 export const Attendance = objectType({
