@@ -131,6 +131,8 @@ export class LocationService {
 
     private static checkConstraints(curLc : Location,destLc : Location,shiftStart : Date,shiftEnd : Date,radius : number) : boolean  {
         if(!this.isInsideRadius(curLc,destLc,radius)) {
+            console.log(`dest lat lang ${destLc.lat}, ${destLc.long}`)
+            console.log(`current lat lang ${curLc.lat}, ${curLc.long}`)
             console.log("Not Inside Radius")
             return false
         }

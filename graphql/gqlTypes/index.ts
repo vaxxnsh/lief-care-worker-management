@@ -4,6 +4,7 @@ export * from './Org'
 export * from './Location';
 export * from './Members';
 export * from './Attendance';
+export * from './User'
 
 export const DateTime = scalarType({
   name: 'DateTime',

@@ -3,15 +3,22 @@
 
 
 type Attendance {
-  address: String
+  clockInAt: DateTime!
+  clockInLat: Float!
+  clockInLng: Float!
+  clockOutAt: DateTime
+  clockOutLat: Float
+  clockOutLng: Float
+  date: DateTime!
   id: String!
-  latitude: Float!
-  longitude: Float!
-  name: String!
-  organizationId: String!
-  radiusMeters: Int!
-  shiftEnd: DateTime!
-  shiftStart: DateTime!
+  status: AttendanceStatus!
+  user: User!
+}
+
+enum AttendanceStatus {
+  ABSENT
+  CHECKED_OUT
+  PRESENT
 }
 
 scalar DateTime
@@ -54,4 +61,13 @@ type Organization {
 type Query {
   GetOrgLocations(orgId: String!): [Location]
   GetOrgs: [Organization]
+  getClockInEmployees(orgId: String!): [Attendance!]!
+}
+
+type User {
+  email: String!
+  emailVerified: Boolean
+  id: String!
+  image: String
+  name: String
 }

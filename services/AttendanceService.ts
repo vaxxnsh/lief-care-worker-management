@@ -79,6 +79,28 @@ export class AttendanceService {
         })
     }
 
+    public static async getClockIdInEmployees(orgId : string) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); 
+        
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1); 
+
+        return await prisma.attendance.findMany({
+            where : {
+                organizationId : orgId,
+                date : {
+                    gte : today,
+                    lt : tomorrow
+                }
+            },
+
+            include : {
+                user : true,
+            }
+        })
+    }
+
     private static currentDate() {
         const todayMidnight = new Date();
         todayMidnight.setHours(0, 0, 0, 0); 

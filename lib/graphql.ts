@@ -53,3 +53,26 @@ export const REMOVE_LOCATION = gql`
     removeLocationFromOrg(orgId: $orgId, locationId: $locationId)
   }
 `;
+
+export const GET_CLOCKED_IN_EMPLOYEES = gql`
+query GetClockInEmployees($orgId: String!) {
+  getClockInEmployees(orgId: $orgId) {
+    id
+    date
+    clockInAt
+    clockInLat
+    clockInLng
+    clockOutAt
+    clockOutLat
+    clockOutLng
+    status
+    user {
+      id
+      name
+      email
+      emailVerified
+      image
+    }
+  }
+}
+`
