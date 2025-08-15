@@ -101,6 +101,18 @@ export class AttendanceService {
         })
     }
 
+    public static async GetAttendanceForUser(userId : string) {
+        return await prisma.attendance.findMany({
+            where : {
+                userId : userId,
+            },
+
+            include : {
+                user : true,
+            }
+        })
+    }
+
     private static currentDate() {
         const todayMidnight = new Date();
         todayMidnight.setHours(0, 0, 0, 0); 

@@ -66,6 +66,8 @@ type Organization {
 type Query {
   GetOrgLocations(orgId: String!): [Location]
   GetOrgs: [Organization]
+  GetUserAttendance: [Attendance!]!
+  GetUserMemberOrgs: [Organization]
   getClockInEmployees(orgId: String!): [Attendance!]!
 }
 

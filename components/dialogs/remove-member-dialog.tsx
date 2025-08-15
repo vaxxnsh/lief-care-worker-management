@@ -5,12 +5,10 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import React, { SetStateAction, useState } from "react";
 import { toast } from "sonner";
-import { Organization } from "@/app/(main)/create-org/page";
 import { useMutation } from "@apollo/client";
 import { REMOVE_MEMBER_FROM_ORG } from "@/lib/graphql";
 
 type RemoveMemberProps = {
-    orgs : Organization[]
     removeMemberDialogOpen : boolean
     selectedOrgId : string
     setRemoveMemberDialogOpen : React.Dispatch<SetStateAction<boolean>>

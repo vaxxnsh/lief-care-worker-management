@@ -20,6 +20,20 @@ export class UserService {
             }
         })
     }
+    public static async GetMemberOrgs(userId : string) {
+        const memberships =  await prisma.orgMembers.findMany({
+            where : {
+                userId : userId
+            },
+
+            include : {
+                organization : true
+            }
+        })
+        
+        return memberships.map((m) => m.organization)
+    }
+
 
     public static async isMember(userId : string,orgId : string) : Promise<[false,null] | [true,OrgRole]> {
         const user = await prisma.user.findFirst({where : {id : userId}, include : {orgMemberships : true}})

@@ -4,7 +4,7 @@ import { UserService } from "@/services/userService";
 import { extendType, nonNull, objectType, stringArg, intArg, floatArg } from "nexus";
 
 const TEST_ADMIN="cme7b98yo0001mzm9g91lpa7b";
-const TEST_USER="cme7b905i0000mzm9n22or9yb";
+export const TEST_USER="cme7b905i0000mzm9n22or9yb";
 
 export const Organization = objectType({
     name : "Organization",
@@ -41,6 +41,26 @@ export const OrganizationQuery = extendType({
         ))
       },     
     })
+    t.list.field('GetUserMemberOrgs', {     
+      type: 'Organization',
+      resolve: async () => {
+        
+        const orgs =  await UserService.GetMemberOrgs(TEST_USER)
+
+        if (!orgs) return []
+
+        return orgs.map((o) => (
+          {
+            id : o.id,
+            name : o.name,
+            createdBy : o.createdBy,
+            memberCount : 0,
+            locationCount : 0,
+            createdAt : o.createdAt.toISOString()
+          }
+        ))
+      },     
+    })
   },
 })
 
@@ -48,7 +68,7 @@ export const OrganizationQuery = extendType({
 export const OrgLocationQuery = extendType({
   type: "Query",
   definition(t) {
-        t.list.field("GetOrgLocations", {
+    t.list.field("GetOrgLocations", {
       type: "Location",
       args: {
         orgId: nonNull(stringArg()),

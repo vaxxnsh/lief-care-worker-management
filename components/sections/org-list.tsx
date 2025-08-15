@@ -169,14 +169,12 @@ const OrgList = () => {
         )}  
 
         <AddMemberDailog 
-            orgs={orgs} 
             selectedOrgId={selectedOrgId}
             addMemberDialogOpen={addMemberDialogOpen}
             setAddMemberDialogOpen={setAddMemberDialogOpen}
         />
 
         <RemoveMemberDialog 
-            orgs={orgs}
             selectedOrgId={selectedOrgId}
             removeMemberDialogOpen={removeMemberDialogOpen}
             setRemoveMemberDialogOpen={setRemoveMemberDialogOpen}

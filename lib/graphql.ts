@@ -14,6 +14,15 @@ export const GET_ORGS = gql`
   }
 `;
 
+export const GET_MEMBER_ORGS = gql`
+  query GetUserMemberOrgs {
+    GetUserMemberOrgs {
+      id
+      name
+    }
+  }
+`;
+
 export const CREATE_ORG = gql`
   mutation CreateOrg($name: String!) {
     createOrg(name: $name) {
@@ -119,6 +128,34 @@ query GetClockInEmployees($orgId: String!) {
       emailVerified
       image
     }
+  }
+}
+`
+
+export const CLOCK_IN_TO_ORG=gql`
+mutation ClockInToOrg($orgId: String!, $lat: Float!, $long: Float!) {
+  clockInToOrg(orgId: $orgId, lat: $lat, long: $long)
+}
+`
+
+export const CLOCK_OUT_OF_ORG = gql`
+  mutation ClockOutOfOrg($orgId: String!, $lat: Float!, $long: Float!) {
+    clockOutOfOrg(orgId: $orgId, lat: $lat, long: $long)
+  }
+`;
+
+export const GET_USER_ATTENDANCE = gql`
+query GetUserAttendance {
+   GetUserAttendance {
+    id
+    date
+    clockInAt
+    clockInLat
+    clockInLng
+    clockOutAt
+    clockOutLat
+    clockOutLng
+    status
   }
 }
 `

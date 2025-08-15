@@ -1,5 +1,6 @@
 import { AttendanceService } from '@/services/attendanceService'
 import { objectType, extendType, nonNull, stringArg, enumType } from 'nexus'
+import { TEST_USER } from './Org'
 
 export const Attendance = objectType({
   name: 'Attendance',
@@ -60,6 +61,28 @@ export const AttendanceQuery = extendType({
       resolve : async (_,{orgId}) => {
 
         const attendances =  await AttendanceService.getClockIdInEmployees(orgId); 
+
+        return attendances.map((att) => {
+            return {
+                id : att.id,
+                date : att.date,
+                clockInAt : att.clockInAt,
+                clockInLat : att.clockInLat,
+                clockInLng  : att.clockInLng,
+                status : att.status,
+                clockOutAt : att.clockOutAt,
+                clockOutLat : att.clockOutLat,
+                clockOutLng : att.clockOutLng,
+            }
+        })
+      }
+    })
+    t.nonNull.list.nonNull.field('GetUserAttendance', {
+      type: 'Attendance',
+   
+      resolve : async () => {
+
+        const attendances =  await AttendanceService.GetAttendanceForUser(TEST_USER); 
 
         return attendances.map((att) => {
             return {
