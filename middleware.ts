@@ -18,7 +18,7 @@ export default auth(async (req) =>  {
   if (isApi) return;
 
   if (isAuthenticated && isAuthRoute) {
-    return Response.redirect(`${url}/dashboard`);
+    return Response.redirect(`${url}/`);
   }
   if (!isAuthenticated && isPrivateRoute) {
     return Response.redirect(`${url}/login`);

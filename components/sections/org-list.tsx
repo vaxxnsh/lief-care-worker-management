@@ -1,5 +1,5 @@
 "use client";
-import { Organization } from "@/app/(main)/create-org/page";
+import { Organization } from "@/app/(main)/page";
 import { Building2, Calendar, MapPin, Trash2, UserMinus, UserPlus, Users } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
@@ -10,6 +10,7 @@ import AddMemberDailog from "../dialogs/add-member-dialog";
 import RemoveMemberDialog from "../dialogs/remove-member-dialog";
 import { useMutation, useQuery } from "@apollo/client";
 import { DELETE_ORG, GET_ORGS } from "@/lib/graphql";
+import Link from "next/link";
 
 const OrgList = () => {
     
@@ -86,7 +87,13 @@ const OrgList = () => {
                             <Building2 className="h-6 w-6 text-primary" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <CardTitle className="text-lg truncate text-black">{o.name}</CardTitle>
+                            <CardTitle>
+                              <Link 
+                                href={`/orgs/${o.id}`}
+                                className="text-lg truncate text-black" >
+                                  {o.name}
+                              </Link>
+                            </CardTitle>
                             <CardDescription className="flex items-center gap-1 mt-1 text-black/70">
                                 <Calendar className="h-3 w-3" />
                                 Created {o.createdAt && new Date(o.createdAt).toLocaleDateString()}

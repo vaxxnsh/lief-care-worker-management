@@ -3,9 +3,6 @@ import { OrgService } from "@/services/orgService";
 import { UserService } from "@/services/userService";
 import { extendType, nonNull, objectType, stringArg, intArg, floatArg } from "nexus";
 
-const TEST_ADMIN="cme7b98yo0001mzm9g91lpa7b";
-export const TEST_USER="cme7b905i0000mzm9n22or9yb";
-
 export const Organization = objectType({
     name : "Organization",
     definition(t) {
@@ -23,9 +20,10 @@ export const OrganizationQuery = extendType({
   definition(t) {
     t.list.field('GetOrgs', {     
       type: 'Organization',
-      resolve: async () => {
-        
-        const orgs =  await UserService.GetUserOrgs(TEST_ADMIN)
+      resolve: async (_parent,_args,ctx) => {
+
+
+        const orgs =  await UserService.GetUserOrgs(ctx.user?.id as string)
 
         if (!orgs) return []
 
@@ -43,9 +41,9 @@ export const OrganizationQuery = extendType({
     })
     t.list.field('GetUserMemberOrgs', {     
       type: 'Organization',
-      resolve: async () => {
+      resolve: async (_parent,_args,ctx) => {
         
-        const orgs =  await UserService.GetMemberOrgs(TEST_USER)
+        const orgs =  await UserService.GetMemberOrgs(ctx.user?.id as string)
 
         if (!orgs) return []
 
@@ -88,9 +86,9 @@ export const OrgMutations = extendType({
       args: {
         name: nonNull(stringArg()),
       },
-      resolve: async (_parent, {name}) => {
-        //TODO: remove test admin
-        const org = await OrgService.createOrg(name,TEST_ADMIN);
+      resolve: async (_parent, {name},ctx) => {
+  
+        const org = await OrgService.createOrg(name,ctx.user?.id as string);
 
         return {
             id : org.id,
@@ -107,8 +105,8 @@ export const OrgMutations = extendType({
       args: {
         orgId: nonNull(stringArg()),
       },
-      resolve: async (_parent, {orgId}) => {
-        return await OrgService.deleteOrg(orgId,TEST_ADMIN);
+      resolve: async (_parent, {orgId},ctx) => {
+        return await OrgService.deleteOrg(orgId,ctx.user?.id as string);
       },
     });
 
@@ -120,10 +118,13 @@ export const OrgMutations = extendType({
         role : nonNull(intArg())
       },
 
-      resolve: async (_parent,{memberId,orgId,role}) => {
-          //TODO: Add id from context here
+      resolve: async (_parent,{memberId,orgId,role},ctx) => {
           const roleName = !!role == true ? "MANAGER" : "CARE_WORKER"
-          const success = await OrgService.addUserToOrg(memberId,TEST_ADMIN,orgId,roleName)
+          const success = await OrgService.addUserToOrg(
+            memberId,ctx.user?.id as string,
+            orgId,
+            roleName
+          )
           return success;
       }
     })
@@ -135,9 +136,12 @@ export const OrgMutations = extendType({
         memberId : nonNull(stringArg()),
       },
 
-      resolve: async (_parent,{memberId,orgId}) => {
-          //TODO: Add id from context here
-          const success = await OrgService.removeMember(memberId,TEST_ADMIN,orgId);
+      resolve: async (_parent,{memberId,orgId},ctx) => {
+          const success = await OrgService.removeMember(
+            memberId,
+            ctx.user?.id as string,
+            orgId
+          );
           return success;
       }}
     )
@@ -149,10 +153,14 @@ export const OrgMutations = extendType({
         role : nonNull(intArg())
       },
 
-      resolve: async (_parent,{memberId,orgId,role}) => {
-          //TODO: Add id from context here
+      resolve: async (_parent,{memberId,orgId,role},ctx) => {
           const roleName = !!role === true ? "MANAGER" : "CARE_WORKER"
-          const success = await OrgService.changeMemberRole(memberId,TEST_ADMIN,orgId,roleName);
+          const success = await OrgService.changeMemberRole(
+            memberId,
+            ctx.user?.id as string,
+            orgId,
+            roleName
+          );
           return success;
       }}
     )
@@ -170,12 +178,12 @@ export const OrgMutations = extendType({
         shiftEnd : nonNull(stringArg())
       },
 
-      resolve : async (_parent,{orgId,name,address,lat,long,radius,shiftStart,shiftEnd}) => {
+      resolve : async (_parent,{orgId,name,address,lat,long,radius,shiftStart,shiftEnd},ctx) => {
         console.log('request reached here')
         const temp = `1970-01-01T${shiftStart}:00.000`;
         const temp2 = `1970-01-01T${shiftEnd}:00.000`;
         
-        return await OrgService.addLocation(TEST_ADMIN,orgId,{
+        return await OrgService.addLocation(ctx.user?.id as string,orgId,{
           name : name,
           address : address,
           radius : radius,
@@ -196,8 +204,8 @@ export const OrgMutations = extendType({
         locationId : nonNull(stringArg()),
       },
 
-      resolve : async (_parent,{orgId,locationId}) => {
-        return await OrgService.removeLocation(TEST_ADMIN,orgId,locationId);
+      resolve : async (_parent,{orgId,locationId},ctx) => {
+        return await OrgService.removeLocation(ctx.user?.id as string,orgId,locationId);
       }
     })
 
@@ -208,8 +216,8 @@ export const OrgMutations = extendType({
         lat : nonNull(floatArg()),
         long : nonNull(floatArg()),
       },
-      resolve : async (_parent,{orgId,lat,long}) => {
-          return await UserService.clockInToOrg(TEST_USER,orgId,{
+      resolve : async (_parent,{orgId,lat,long},ctx) => {
+          return await UserService.clockInToOrg(ctx.user?.id as string,orgId,{
             lat : lat,
             long : long
           })
@@ -222,8 +230,8 @@ export const OrgMutations = extendType({
         lat : nonNull(floatArg()),
         long : nonNull(floatArg()),
       },
-      resolve : async (_parent,{orgId,lat,long}) => {
-          return await UserService.clockOutOfOrg(TEST_USER,orgId,{
+      resolve : async (_parent,{orgId,lat,long},ctx) => {
+          return await UserService.clockOutOfOrg(ctx.user?.id as string,orgId,{
             lat : lat,
             long : long
           })

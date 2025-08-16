@@ -1,1 +1,1 @@
-export const ProtectedPages = ["/"]
+export const ProtectedPages = ["/","/attendance","/orgs"]

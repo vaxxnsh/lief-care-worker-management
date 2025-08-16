@@ -11,8 +11,10 @@ export type Context = {
 
 export async function createContext(): Promise<Context> {
     const session = await auth()
+    const user = session?.user;
+    console.log("session : ",session)
     return {
         prisma,
-        user : session?.user || null
+        user : user || null
     }
 }

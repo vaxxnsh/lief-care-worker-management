@@ -10,6 +10,7 @@ import bycrypt from 'bcryptjs'
 
 
 
+
 if (!googleClientId || !googleClientSecret) {
     
     throw new Error("GOOGLE_CLIENT_ID Or GOOGLE_CLIENT_SECRET Not in the env")
@@ -67,7 +68,27 @@ export const authOptions : NextAuthConfig = {
 
     })
   ],
+
+  callbacks : {
+       async jwt({ token, user }) {
+      // First login: persist DB id into the token
+      if (user) token.id = user.id;
+      return token;
+    },
+    async session({ session, token }) {
+    return {
+      ...session,
+      user: {
+        ...session.user,
+        id: token.sub,
+      },
+    }
+  }
+
+
+  }
+
 }
 
-export const { auth, handlers: { GET, POST }, signIn, signOut } = NextAuth(authOptions);
+export const { auth,signIn, signOut } = NextAuth(authOptions);
 
