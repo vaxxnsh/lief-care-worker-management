@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Clock, Building2, CheckCircle, LibraryBig } from "lucide-react"
+import { Clock, Building2, CheckCircle, LibraryBig, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -23,6 +23,7 @@ import MemberOrgs from "@/components/card/member-orgs"
 import AttendanceList from "@/components/card/attendance-list"
 import { toast } from "sonner"
 import useLocation from "@/hooks/useLocation"
+import { useSidebar } from "@/components/ui/sidebar"
 
 
 interface ClockInToOrgResponse {
@@ -55,6 +56,7 @@ export default function ClockInOutPage() {
   const [clockOutNote, setClockOutNote] = useState("")
   const { data, error } = useQuery<{ GetUserMemberOrgs: {id : string; name : string}[] }>(GET_MEMBER_ORGS);
   const memberOrgs = data?.GetUserMemberOrgs || []
+  const {toggleSidebar} = useSidebar();
 
   const [clockInToOrg] = useMutation<ClockInToOrgResponse, ClockInToOrgVars>(CLOCK_IN_TO_ORG, {
     onCompleted: (response) => {
@@ -147,17 +149,27 @@ export default function ClockInOutPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <LibraryBig className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Attendances</h1>
-              <p className="text-muted-foreground">Manage your Attendance here for different Orgs</p>
-            </div>
-          </div>
-      </header>
+<header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
+  <div className="flex items-center gap-3">
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={toggleSidebar}
+      className="h-9 w-9 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden"
+    >
+      <Menu className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+      <span className="sr-only">Toggle sidebar</span>
+    </Button>
+    
+    <div className="p-2 bg-primary/10 rounded-lg">
+      <LibraryBig className="h-6 w-6 text-primary" />
+    </div>
+    <div>
+      <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Attendances</h1>
+      <p className="text-sm sm:text-base text-muted-foreground">Manage your Attendance here for different Orgs</p>
+    </div>
+  </div>
+</header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
