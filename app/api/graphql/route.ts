@@ -7,10 +7,16 @@ import { createContext } from "@/graphql/context";
 const apolloServer = new ApolloServer({ schema });
 
 const handler = startServerAndCreateNextHandler<NextRequest>(
-    apolloServer,
-    {
-        context : createContext,
-    }
+  apolloServer,
+  {
+    context: createContext,
+  }
 );
 
-export { handler as GET, handler as POST };
+export async function GET(req: NextRequest) {
+  return handler(req);
+}
+
+export async function POST(req: NextRequest) {
+  return handler(req);
+}
