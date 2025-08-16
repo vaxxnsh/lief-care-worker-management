@@ -3,7 +3,7 @@ import { url } from "./config";
 
 
 const apolloClient = new ApolloClient({
-    uri : `${url}/graphql`,
+    uri : `${url}graphql`,
     cache : new InMemoryCache()
 });
 
